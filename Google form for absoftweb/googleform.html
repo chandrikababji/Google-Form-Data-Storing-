@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Form</title>
+    <style>
+        /* Simple styling for the form */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: red;
+
+            
+
+        }
+        .form-container {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container label {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .form-container input, .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Who are Intrested In Portfolio Website</h2>
+        <form id="contactForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br><br>
+
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" required></textarea><br><br>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <button onclick="downloadCSV()">Download </button>
+
+    <script>
+        // JavaScript code for handling form submission
+        document.getElementById("contactForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent the form from submitting the traditional way
+
+            // Get form data
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const message = document.getElementById("message").value;
+
+            // Create an object to store the form data
+            const formData = {
+                name: name,
+                email: email,
+                message: message
+            };
+
+            // Get the existing form data from localStorage (if any)
+            let storedData = JSON.parse(localStorage.getItem("formDataList")) || [];
+
+            // Add new form data to the stored data
+            storedData.push(formData);
+
+            // Save updated data back to localStorage
+            localStorage.setItem("formDataList", JSON.stringify(storedData));
+
+            // Optional: Alert the user that the form was submitted
+            alert("Form submitted successfully!");
+
+            // Reset the form fields after submission
+            document.getElementById("contactForm").reset();
+        });
+
+        // Function to download the form data as CSV
+        function downloadCSV() {
+            // Get stored form data from localStorage
+            const formDataList = JSON.parse(localStorage.getItem("formDataList")) || [];
+
+            if (formDataList.length === 0) {
+                alert("No form data available to download.");
+                return;
+            }
+
+            // Convert the array of form data into a CSV string
+            const csvRows = [];
+            // Add header row
+            csvRows.push("Name,Email,Message");
+
+            // Loop through form data and add each row
+            formDataList.forEach(formData => {
+                csvRows.push(`${formData.name},${formData.email},${formData.message}`);
+            });
+
+            // Create a CSV file from the rows
+            const csvString = csvRows.join("\n");
+
+            // Create a Blob with the CSV data and trigger download
+            const blob = new Blob([csvString], { type: "text/csv" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "formData.csv";  // The file name for the download
+            link.click();
+        }
+    </script>
+
+</body>
+</html>
